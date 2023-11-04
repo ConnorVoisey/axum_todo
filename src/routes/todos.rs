@@ -11,8 +11,12 @@ use serde_json::{json, Value};
 use sqlx::{FromRow, Pool};
 use uuid::Uuid;
 
-pub fn todo_router() -> Router {
-    Router::new().route("/todo", get(|| async { "testing router" }))
+use super::AppState;
+
+pub fn todo_router() -> Router<AppState> {
+    Router::new()
+        .route("/", get(index).post(store))
+        .route("/:id", get(show).put(update).delete(delete))
 }
 
 #[derive(Serialize, FromRow)]
