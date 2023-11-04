@@ -15,16 +15,15 @@ pub async fn connect() -> Pool<sqlx::Postgres> {
         .await
         .expect("Failed to connect to database at provided uri");
 
-    //run_migrations(&pool)
-    //    .await
-    //    .expect("DB state did not match migrations");
+    run_migrations(&pool)
+        .await
+        .expect("DB state did not match migrations");
 
     pool
 }
 
 async fn run_migrations(pool: &Pool<sqlx::Postgres>) -> Result<(), MigrateError> {
-//    sqlx::migrate!().run(pool).await
-        todo!()
+    sqlx::migrate!().run(pool).await
 }
 
 pub async fn run() {
