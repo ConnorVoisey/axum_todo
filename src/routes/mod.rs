@@ -4,7 +4,7 @@ use axum::{extract::FromRef, routing::get, Router};
 use sqlx::Pool;
 use tower_http::cors::CorsLayer;
 
-use self::todos::{delete, index, show, store, todo_router, update};
+use self::todos::todo_router;
 
 #[derive(Clone, FromRef)]
 pub struct AppState {

@@ -140,12 +140,12 @@ impl IntoResponse for Error {
                     .into_response();
             }
 
-            Self::Sqlx(ref e) => {
+            Self::Sqlx(ref _e) => {
                 // TODO: we probably want to use `tracing` instead
                 // so that this gets linked to the HTTP request by `TraceLayer`.
             }
 
-            Self::Anyhow(ref e) => {
+            Self::Anyhow(ref _e) => {
                 // TODO: we probably want to use `tracing` instead
                 // so that this gets linked to the HTTP request by `TraceLayer`.
             }
@@ -212,13 +212,19 @@ where
 pub struct FieldError {
     pub errors: HashMap<String, Vec<String>>,
 }
+impl Default for FieldError {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl FieldError {
     pub fn new() -> FieldError {
         FieldError {
             errors: HashMap::new(),
         }
     }
-    pub fn push_error(self: &mut Self, key: &str, error: &str) {
+    pub fn push_error(&mut self, key: &str, error: &str) {
         let mut binding = Vec::new();
         let error_for_key = match self.errors.get_mut(key) {
             Some(error) => error,

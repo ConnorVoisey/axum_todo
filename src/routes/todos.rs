@@ -1,13 +1,12 @@
 use crate::error::Result;
 use axum::{
-    extract::{Path, Query, State},
-    response::IntoResponse,
+    extract::{Path, State},
     routing::get,
     Json, Router,
 };
-use fake::faker::boolean::raw::Boolean;
+
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+
 use sqlx::{FromRow, Pool};
 use uuid::Uuid;
 

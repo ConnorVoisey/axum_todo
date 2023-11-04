@@ -4,4 +4,3 @@ use axum_todo::run;
 async fn main() {
     run().await
 }
-
