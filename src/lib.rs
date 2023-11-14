@@ -1,23 +1,21 @@
+pub mod config;
 pub mod error;
 pub mod routes;
-use dotenvy::dotenv;
+use config::Config;
 use routes::create_routes;
 use sqlx::{migrate::MigrateError, postgres::PgPoolOptions, Pool};
+use std::{net::SocketAddr, sync::Arc};
 
-pub async fn connect() -> Pool<sqlx::Postgres> {
-    dotenv().ok();
-    let uri_string =
-        dotenvy::var("DATABASE_URL").expect("Failed to read env variable 'DATABASE_URL'");
-
+pub async fn connect(config: &Config) -> Pool<sqlx::Postgres> {
     let pool = PgPoolOptions::new()
-        .max_connections(50)
-        .connect(&uri_string)
+        .max_connections(config.public.db_connections)
+        .connect(&config.private.db_url)
         .await
         .expect("Failed to connect to database at provided uri");
 
     run_migrations(&pool)
         .await
-        .expect("DB state did not match migrations");
+        .expect("unable to run migrations");
 
     pool
 }
@@ -27,10 +25,15 @@ async fn run_migrations(pool: &Pool<sqlx::Postgres>) -> Result<(), MigrateError>
 }
 
 pub async fn run() {
-    let app = create_routes(connect().await);
+    let config = Arc::new(Config::init());
+    let pool = connect(&config).await;
+    let app = create_routes(pool, config.clone());
 
-    // run it with hyper on localhost:3000
-    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
+    let port = config.clone().public.port;
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+
+    // serve the api
+    axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
         .unwrap();
