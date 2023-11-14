@@ -92,7 +92,7 @@ pub async fn store(
     .fetch_one(&state.pool)
     .await;
     match res {
-        Ok(val) => (StatusCode::OK, Json(val)).into_response(),
+        Ok(val) => (StatusCode::CREATED, Json(val)).into_response(),
         Err(err) => Error::Sqlx(err).into_response(),
     }
 }
