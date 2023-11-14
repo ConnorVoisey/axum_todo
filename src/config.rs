@@ -15,7 +15,7 @@ pub struct Config {
 impl Config {
     pub fn init() -> Config {
         // load env file as enviroment variables
-        dotenv().ok();
+        dotenv().expect("failed to read .env file");
 
         let private = PrivateConf {
             db_url: get_env("DATABASE_URL"),
@@ -23,7 +23,7 @@ impl Config {
 
         let public = PublicConf {
             port: get_env("PORT"),
-            db_connections: get_env("DB_CONNECTIONS")
+            db_connections: get_env("DB_CONNECTIONS"),
         };
 
         Config { private, public }
@@ -35,8 +35,8 @@ where
     T::Err: std::fmt::Debug,
 {
     std::env::var(key)
-        .expect("DATABASE_URL must be set")
+        .unwrap_or_else(|_| panic!("{key} must be set"))
         .trim()
         .parse::<T>()
-        .expect(&format!("incorrect type for env '{key}'"))
+        .unwrap_or_else(|_| panic!("incorrect type for env '{key}'"))
 }

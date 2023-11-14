@@ -1,5 +1,6 @@
 pub mod config;
 pub mod error;
+pub mod open_api;
 pub mod routes;
 use config::Config;
 use routes::create_routes;
