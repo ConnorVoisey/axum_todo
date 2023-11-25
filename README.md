@@ -16,5 +16,5 @@ Things to do:
  ### Useful commands
 
 ```sh
-cargo watch -c -w src -x r
+cargo watch -c -i logs -i openApi.json -x r
 ```

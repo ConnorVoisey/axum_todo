@@ -1,4 +1,3 @@
-use std::sync::Arc;
 use aide::{
     axum::{
         routing::{get, get_with},
@@ -8,6 +7,7 @@ use aide::{
     redoc::Redoc,
 };
 use axum::{response::IntoResponse, Extension, Json};
+use std::sync::Arc;
 
 pub fn docs_routes() -> ApiRouter {
     aide::gen::infer_responses(true);
