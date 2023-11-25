@@ -4,7 +4,7 @@ A simple todo api written in rust.
 
 Things to do:
 
- - [ ] add tracing
+ - [x] add tracing
  - [ ] convert tracing to open api
  - [ ] integrate tracing to jaeger
  - [ ] create seeders
