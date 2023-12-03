@@ -4,9 +4,12 @@ use dotenvy::dotenv;
 use log::{get_log_level, LogOutput};
 use tracing::level_filters::LevelFilter;
 
+// remove this and replace it with a debug that doesnt print anything
+#[derive(Debug)]
 pub struct PrivateConf {
     pub db_url: String,
 }
+#[derive(Debug)]
 pub struct PublicConf {
     pub port: u16,
     pub db_connections: u32,
@@ -15,6 +18,7 @@ pub struct PublicConf {
     pub log_file_level: LevelFilter,
     pub log_file_name: String,
 }
+#[derive(Debug)]
 pub struct Config {
     pub private: PrivateConf,
     pub public: PublicConf,

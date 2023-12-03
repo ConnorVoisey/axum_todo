@@ -9,8 +9,9 @@ use axum::{
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
+use sqlx::{pool, FromRow, Pool, Postgres};
 use std::sync::Arc;
+use tracing::instrument;
 use uuid::Uuid;
 
 pub fn todo_router(state: Arc<AppState>) -> ApiRouter {
@@ -51,15 +52,22 @@ pub struct Todo {
     completed: bool,
 }
 
+#[instrument]
 pub async fn index(State(state): StateAppState) -> impl IntoApiResponse {
-    let res = sqlx::query_as!(Todo, "SELECT * FROM todo;")
-        .fetch_all(&state.pool)
-        .await;
+    let res = index_todos(&state.pool).await;
 
     match res {
         Ok(val) => (StatusCode::OK, Json(val)).into_response(),
         Err(err) => Error::Sqlx(err).into_response(),
     }
+}
+
+// this should be moved into a model layer
+#[instrument]
+async fn index_todos(pool: &Pool<Postgres>) -> Result<Vec<Todo>, sqlx::Error> {
+    Ok(sqlx::query_as!(Todo, "SELECT * FROM todo;")
+        .fetch_all(pool)
+        .await?)
 }
 
 pub async fn show(State(state): StateAppState, Path(id): Path<Uuid>) -> impl IntoApiResponse {

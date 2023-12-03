@@ -7,7 +7,7 @@ use routes::create_routes;
 use sqlx::{migrate::MigrateError, postgres::PgPoolOptions, Pool};
 use std::{net::SocketAddr, sync::Arc};
 use tracing::info;
-
+use axum_tracing_opentelemetry::opentelemetry_tracing_layer;
 use crate::config::log::init_tracing;
 
 pub async fn connect(config: &Config) -> Pool<sqlx::Postgres> {
@@ -33,7 +33,8 @@ pub async fn run() {
     let config = Arc::new(Config::init());
 
     // init tracing so that the logs go somewhere
-    init_tracing(&config);
+    init_tracing_opentelemetry::tracing_subscriber_ext::init_subscribers().expect("failed to init tracing");
+    // init_tracing(&config);
     info!("starting application");
 
     let pool = connect(&config).await;

@@ -6,6 +6,7 @@ use axum::{
     extract::{FromRef, State},
     Extension, Router,
 };
+use axum_tracing_opentelemetry::{opentelemetry_tracing_layer, middleware::{OtelInResponseLayer, OtelAxumLayer}};
 use sqlx::Pool;
 use std::{
     fs::File,
@@ -16,7 +17,7 @@ use tower_http::cors::CorsLayer;
 
 pub type StateAppState = State<Arc<AppState>>;
 
-#[derive(Clone, FromRef)]
+#[derive(Clone, FromRef, Debug)]
 pub struct AppState {
     pub pool: Pool<sqlx::Postgres>,
     pub config: Arc<Config>,
@@ -36,7 +37,10 @@ pub fn create_routes(pool: Pool<sqlx::Postgres>, config: Arc<Config>) -> Router 
         .nest_api_service("/docs", docs_routes())
         .finish_api_with(&mut api, api_docs)
         .layer(Extension(Arc::new(api.clone())))
-        .layer(CorsLayer::permissive());
+        .layer(CorsLayer::permissive()) // include trace context as header into the response
+        .layer(OtelInResponseLayer::default())
+        //start OpenTelemetry trace on incoming request
+        .layer(OtelAxumLayer::default());
 
     write_open_api(&api);
     router
