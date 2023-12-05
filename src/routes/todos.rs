@@ -1,5 +1,5 @@
 use super::{AppState, StateAppState};
-use crate::error::Error;
+use crate::{error::Error, models::todo::Todo};
 use aide::axum::{routing::get_with, ApiRouter, IntoApiResponse};
 use axum::{
     extract::{Path, State},
@@ -44,30 +44,15 @@ pub fn todo_router(state: Arc<AppState>) -> ApiRouter {
         .with_state(state)
 }
 
-#[derive(Serialize, FromRow, JsonSchema)]
-pub struct Todo {
-    id: Uuid,
-    title: String,
-    description: String,
-    completed: bool,
-}
 
-#[instrument]
+#[instrument(skip_all)]
 pub async fn index(State(state): StateAppState) -> impl IntoApiResponse {
-    let res = index_todos(&state.pool).await;
+    let res = Todo::index(&state.pool).await;
 
     match res {
         Ok(val) => (StatusCode::OK, Json(val)).into_response(),
         Err(err) => Error::Sqlx(err).into_response(),
     }
-}
-
-// this should be moved into a model layer
-#[instrument]
-async fn index_todos(pool: &Pool<Postgres>) -> Result<Vec<Todo>, sqlx::Error> {
-    Ok(sqlx::query_as!(Todo, "SELECT * FROM todo;")
-        .fetch_all(pool)
-        .await?)
 }
 
 pub async fn show(State(state): StateAppState, Path(id): Path<Uuid>) -> impl IntoApiResponse {

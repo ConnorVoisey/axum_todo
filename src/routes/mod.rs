@@ -30,6 +30,7 @@ pub fn create_routes(pool: Pool<sqlx::Postgres>, config: Arc<Config>) -> Router 
 
     aide::gen::extract_schemas(true);
     let mut api = aide::openapi::OpenApi::default();
+    dbg!(config.clone());
 
     let app_state = Arc::new(AppState { pool, config });
     let router = ApiRouter::new()

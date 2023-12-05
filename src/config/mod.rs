@@ -1,13 +1,18 @@
 pub mod log;
 
+use std::fmt;
+
 use dotenvy::dotenv;
 use log::{get_log_level, LogOutput};
 use tracing::level_filters::LevelFilter;
 
-// remove this and replace it with a debug that doesnt print anything
-#[derive(Debug)]
 pub struct PrivateConf {
     pub db_url: String,
+}
+impl fmt::Debug for PrivateConf {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "private config - vars are hidden")
+    }
 }
 #[derive(Debug)]
 pub struct PublicConf {

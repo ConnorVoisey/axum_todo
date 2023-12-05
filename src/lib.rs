@@ -1,4 +1,5 @@
 pub mod config;
+pub mod models;
 pub mod error;
 pub mod open_api;
 pub mod routes;
