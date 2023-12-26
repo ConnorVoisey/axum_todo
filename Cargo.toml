@@ -18,6 +18,18 @@ dotenvy = "0.15.7"
 fake = "2.8.0"
 init-tracing-opentelemetry = { version = "0.15.0", features = ["tracing_subscriber_ext", "jaeger"] }
 schemars = { version = "0.8.16", features = ["uuid", "uuid1", "chrono"] }
+sea-query = "0.30.5"
+sea-query-binder = { version = "0.5.0", features = [
+  "sqlx-postgres",
+  "with-chrono",
+  "with-json",
+  "with-rust_decimal",
+  "with-bigdecimal",
+  "with-uuid",
+  "with-time",
+  "with-ipnetwork",
+  "with-mac_address",
+] }
 serde = { version = "1.0.189", features = ["derive"] }
 serde_json = "1.0.107"
 sqlx = { version = "0.7.2", features = ["uuid", "postgres", "chrono", "json", "runtime-tokio-native-tls"] }

@@ -1,5 +1,5 @@
 use super::{AppState, StateAppState};
-use crate::{error::Error, models::todo::Todo};
+use crate::{error::Error, models::todo::Todo, query_params::IndexQueryParams};
 use aide::axum::{routing::get_with, ApiRouter, IntoApiResponse};
 use axum::{
     extract::{Path, State},
@@ -44,10 +44,10 @@ pub fn todo_router(state: Arc<AppState>) -> ApiRouter {
         .with_state(state)
 }
 
-
 #[instrument(skip_all)]
 pub async fn index(State(state): StateAppState) -> impl IntoApiResponse {
-    let res = Todo::index(&state.pool).await;
+    let query_params = IndexQueryParams::default();
+    let res = Todo::index(&state.pool, &query_params).await;
 
     match res {
         Ok(val) => (StatusCode::OK, Json(val)).into_response(),
